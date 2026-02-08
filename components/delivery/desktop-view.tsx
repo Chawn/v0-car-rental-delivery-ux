@@ -2,26 +2,15 @@
 
 import React from 'react'
 import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   CheckCircle2,
-  Circle,
-  Camera,
   MapPin,
   FileText,
-  PenTool,
-  DollarSign,
-  Upload,
-  Fuel,
   Gauge,
+  Fuel,
   Check,
-  X,
-  AlertCircle,
   Navigation,
 } from 'lucide-react'
 import type { DeliveryViewProps } from './types'
@@ -29,42 +18,33 @@ import { EXPENSE_TYPES } from './types'
 
 export function DesktopView({
   startMileage,
-  setStartMileage,
   startFuelLevel,
-  setStartFuelLevel,
   vehicleCondition,
-  setVehicleCondition,
   damages,
-  setDamages,
-  selectedCarPart,
-  setSelectedCarPart,
-  showDamageForm,
-  setShowDamageForm,
   vehiclePhotos,
-  setVehiclePhotos,
   contractRead,
-  setContractRead,
   customerSignature,
-  setCustomerSignature,
   driverSignature,
-  setDriverSignature,
   paymentAmount,
-  setPaymentAmount,
   paymentMethod,
-  setPaymentMethod,
   paymentSlip,
-  setPaymentSlip,
   expenses,
-  setExpenses,
-  newExpense,
-  setNewExpense,
-  fileInputRef,
-  receiptInputRef,
-  handleFileUpload,
-  handleReceiptUpload,
-  handleAddExpense,
-  handleRemoveExpense,
 }: DeliveryViewProps) {
+  const vehicleConditionLabels: Record<string, string> = {
+    windshieldWiper: 'แผงปัดน้ำ',
+    sideMirror: 'กระจกมองข้าง',
+    brakes: 'มูลเบรก',
+    steeringWheel: 'พวงมาลัย',
+    remoteStart: 'รีโมทสตาร์ท',
+    carJack: 'แม่แรงรถยนต์',
+    spareTire: 'ยางอะไหล่',
+    headlights: 'ไฟหน้า',
+    taillights: 'ไฟท้าย',
+    turnSignals: 'ไฟเลี้ยว',
+    engineOil: 'น้ำมันเครื่อง',
+    brakeFluid: 'น้ำมันเบรก',
+  }
+
   return (
     <div className="min-h-screen bg-background p-8">
       {/* Header */}
@@ -76,7 +56,7 @@ export function DesktopView({
               <p className="text-sm text-muted-foreground mt-1">Toyota Camry - กก 1234</p>
             </div>
             <Badge variant="secondary" className="text-base px-4 py-2 font-medium">
-              Desktop View
+              Desktop View (Read-Only)
             </Badge>
           </div>
         </div>
@@ -99,212 +79,90 @@ export function DesktopView({
               {/* เลขไมล์และน้ำมัน */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="mileage" className="text-sm font-medium">
-                    เลขไมล์ปัจจุบัน
-                  </Label>
-                  <div className="flex items-center gap-2">
+                  <div className="text-xs text-muted-foreground font-medium">เลขไมล์ปัจจุบัน</div>
+                  <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
                     <Gauge className="h-5 w-5 text-muted-foreground" />
-                    <Input
-                      id="mileage"
-                      type="number"
-                      placeholder="0"
-                      value={startMileage}
-                      onChange={(e) => setStartMileage(e.target.value)}
-                      className="h-10"
-                    />
-                    <span className="text-sm text-muted-foreground">กม.</span>
+                    <span className="text-base font-semibold">{startMileage || '-'} กม.</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fuel" className="text-sm font-medium">
-                    ระดับน้ำมัน (1-8)
-                  </Label>
-                  <div className="flex items-center gap-2">
+                  <div className="text-xs text-muted-foreground font-medium">ระดับน้ำมัน</div>
+                  <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
                     <Fuel className="h-5 w-5 text-muted-foreground" />
-                    <Input
-                      id="fuel"
-                      type="number"
-                      placeholder="1-8"
-                      min="1"
-                      max="8"
-                      value={startFuelLevel}
-                      onChange={(e) => setStartFuelLevel(e.target.value)}
-                      className="h-10"
-                    />
-                    <span className="text-sm text-muted-foreground">/8</span>
+                    <span className="text-base font-semibold">{startFuelLevel || '-'}/8</span>
                   </div>
                 </div>
               </div>
 
-              {/* Damage Diagram */}
-              <div>
-                <Label className="text-sm font-medium mb-3 block">แผนผังตรวจสอบสภาพรถ</Label>
-                <div className="bg-muted/30 rounded-lg p-4">
-                  <div className="grid grid-cols-3 gap-3">
-                    {['หลังคา', 'หน้ารถ', 'ท้ายรถ', 'ด้านซ้าย', 'ด้านขวา', 'กระโปรงหน้า'].map(
-                      (part) => (
-                        <button
-                          key={part}
-                          onClick={() => {
-                            setSelectedCarPart(part)
-                            setShowDamageForm(true)
-                          }}
-                          className="p-2 border-2 border-dashed rounded-lg hover:bg-accent/50 transition-all text-xs font-medium"
-                        >
-                          {part}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {showDamageForm && (
-                  <div className="mt-3 p-3 border-2 border-primary/30 bg-primary/5 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-xs font-semibold">บันทึก: {selectedCarPart}</h4>
-                      <button onClick={() => setShowDamageForm(false)}>
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { value: 'SCRATCH', label: 'ขูดข่วน' },
-                        { value: 'DENT', label: 'กระแทก' },
-                        { value: 'CRACK_MINOR', label: 'แตกน้อย' },
-                        { value: 'CRACK_DEEP', label: 'แตกลึก' },
-                        { value: 'MAJOR_DENT', label: 'บุบมาก' },
-                        { value: 'STREAK', label: 'ริ้ว' },
-                      ].map((type) => (
-                        <Button
-                          key={type.value}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs h-7 bg-transparent"
-                          onClick={() => {
-                            setDamages([
-                              ...damages,
-                              {
-                                location: selectedCarPart,
-                                type: type.value as any,
-                                description: type.label,
-                              },
-                            ])
-                            setShowDamageForm(false)
-                          }}
-                        >
-                          {type.label}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {damages.length > 0 && (
-                  <div className="mt-3 space-y-2">
+              {/* Damage List */}
+              {damages.length > 0 && (
+                <div>
+                  <div className="text-sm font-medium mb-3">รายการความเสียหาย ({damages.length})</div>
+                  <div className="space-y-2">
                     {damages.map((damage, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-2 bg-warning/10 border border-warning/30 rounded text-xs"
+                        className="flex items-center justify-between p-3 bg-warning/10 border border-warning/30 rounded-lg text-sm"
                       >
-                        <span>
-                          {damage.location} - {damage.description}
-                        </span>
-                        <button onClick={() => setDamages(damages.filter((_, i) => i !== idx))}>
-                          <X className="h-3 w-3" />
-                        </button>
+                        <span className="font-medium">{damage.location}</span>
+                        <span className="text-warning-foreground">{damage.description}</span>
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+
+              {damages.length === 0 && (
+                <div className="p-4 bg-success/10 border border-success/30 rounded-lg text-center">
+                  <Check className="h-6 w-6 text-success mx-auto mb-2" />
+                  <p className="text-sm font-medium text-success-foreground">
+                    ไม่พบความเสียหาย
+                  </p>
+                </div>
+              )}
 
               {/* Checklist */}
               <div>
-                <Label className="text-sm font-medium mb-3 block">Checklist อุปกรณ์</Label>
+                <div className="text-sm font-medium mb-3">Checklist อุปกรณ์</div>
                 <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(vehicleCondition).map(([key, checked]) => {
-                    const labels: Record<string, string> = {
-                      windshieldWiper: 'แผงปัดน้ำ',
-                      sideMirror: 'กระจกมองข้าง',
-                      brakes: 'มูลเบรก',
-                      steeringWheel: 'พวงมาลัย',
-                      remoteStart: 'รีโมทสตาร์ท',
-                      carJack: 'แม่แรงรถยนต์',
-                      spareTire: 'ยางอะไหล่',
-                      headlights: 'ไฟหน้า',
-                      taillights: 'ไฟท้าย',
-                      turnSignals: 'ไฟเลี้ยว',
-                      engineOil: 'น้ำมันเครื่อง',
-                      brakeFluid: 'น้ำมันเบรก',
-                    }
-
-                    return (
-                      <button
-                        key={key}
-                        onClick={() =>
-                          setVehicleCondition({ ...vehicleCondition, [key]: !checked })
-                        }
-                        className={`flex items-center justify-between p-2 rounded border transition-all text-xs ${
-                          checked
-                            ? 'border-success bg-success/10'
-                            : 'border-border hover:bg-accent/50'
-                        }`}
-                      >
-                        <span>{labels[key]}</span>
-                        {checked ? (
-                          <CheckCircle2 className="h-4 w-4 text-success" />
-                        ) : (
-                          <Circle className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </button>
-                    )
-                  })}
+                  {Object.entries(vehicleCondition).map(([key, checked]) => (
+                    <div
+                      key={key}
+                      className={`flex items-center justify-between p-2 rounded border ${
+                        checked
+                          ? 'border-success bg-success/10'
+                          : 'border-border bg-muted/20'
+                      }`}
+                    >
+                      <span className="text-xs">{vehicleConditionLabels[key]}</span>
+                      {checked ? (
+                        <CheckCircle2 className="h-4 w-4 text-success" />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">ไม่ได้ตรวจ</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* ถ่ายรูป */}
-              <div>
-                <Label className="text-sm font-medium mb-3 block">ถ่ายรูปสภาพรถ</Label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-10 text-sm"
-                >
-                  <Camera className="mr-2 h-4 w-4" />
-                  ถ่ายรูป / อัพโหลด
-                </Button>
-                {vehiclePhotos.length > 0 && (
-                  <div className="grid grid-cols-4 gap-2 mt-3">
+              {/* รูปถ่าย */}
+              {vehiclePhotos.length > 0 && (
+                <div>
+                  <div className="text-sm font-medium mb-3">รูปภาพรถ ({vehiclePhotos.length})</div>
+                  <div className="grid grid-cols-4 gap-2">
                     {vehiclePhotos.map((photo, idx) => (
-                      <div key={idx} className="relative aspect-square rounded overflow-hidden">
+                      <div key={idx} className="relative aspect-square rounded-lg overflow-hidden shadow-sm">
                         <img
                           src={photo || '/placeholder.svg'}
                           alt={`รูป ${idx + 1}`}
                           className="object-cover w-full h-full"
                         />
-                        <button
-                          onClick={() =>
-                            setVehiclePhotos(vehiclePhotos.filter((_, i) => i !== idx))
-                          }
-                          className="absolute top-1 right-1 p-0.5 bg-destructive rounded-full"
-                        >
-                          <X className="h-3 w-3 text-destructive-foreground" />
-                        </button>
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </Card>
 
@@ -314,7 +172,7 @@ export function DesktopView({
               <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
                 2
               </div>
-              <h2 className="text-xl font-semibold">เดินทาง</h2>
+              <h2 className="text-xl font-semibold">ข้อมูลการเดินทาง</h2>
             </div>
 
             <div className="space-y-4">
@@ -331,18 +189,13 @@ export function DesktopView({
                 ></iframe>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">123 ถนนสุขุมวิท กรุงเทพฯ</p>
-                    <p className="text-xs text-muted-foreground">12.5 กม. | 25 นาที</p>
-                  </div>
+              <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                <MapPin className="h-5 w-5 text-primary" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold">123 ถนนสุขุมวิท กรุงเทพฯ</p>
+                  <p className="text-xs text-muted-foreground">12.5 กม. | 25 นาที</p>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Navigation className="h-4 w-4 mr-1" />
-                  นำทาง
-                </Button>
+                <Navigation className="h-5 w-5 text-muted-foreground" />
               </div>
 
               <div className="space-y-2 text-sm">
@@ -368,90 +221,43 @@ export function DesktopView({
               <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
                 5
               </div>
-              <h2 className="text-xl font-semibold">บันทึกค่าใช้จ่าย</h2>
+              <h2 className="text-xl font-semibold">ค่าใช้จ่ายในการเดินทาง</h2>
             </div>
 
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2">
-                {EXPENSE_TYPES.map((type) => (
-                  <button
-                    key={type.value}
-                    onClick={() => setNewExpense({ ...newExpense, type: type.value })}
-                    className={`p-2 rounded border text-xs font-medium transition-all ${
-                      newExpense.type === type.value
-                        ? 'border-primary bg-primary text-primary-foreground'
-                        : 'border-border hover:bg-accent/50'
-                    }`}
+            {expenses.length > 0 ? (
+              <div className="space-y-3">
+                {expenses.map((expense, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    {type.label}
-                  </button>
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline" className="text-xs">
+                        {EXPENSE_TYPES.find((t) => t.value === expense.type)?.label}
+                      </Badge>
+                      {expense.description && (
+                        <span className="text-sm text-muted-foreground">
+                          {expense.description}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-sm font-semibold">{expense.amount} บาท</span>
+                  </div>
                 ))}
-              </div>
-
-              <Input
-                type="number"
-                placeholder="จำนวนเงิน"
-                value={newExpense.amount}
-                onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                className="h-10"
-              />
-
-              <Textarea
-                placeholder="รายละเอียด (ถ้ามี)"
-                value={newExpense.description}
-                onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                rows={2}
-              />
-
-              <Button
-                onClick={handleAddExpense}
-                className="w-full h-10"
-                disabled={!newExpense.amount}
-              >
-                เพิ่มรายการ
-              </Button>
-
-              {expenses.length > 0 && (
-                <div className="space-y-2">
-                  {expenses.map((expense, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-3 border rounded"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            {EXPENSE_TYPES.find((t) => t.value === expense.type)?.label}
-                          </Badge>
-                          <span className="text-sm font-semibold">{expense.amount} บาท</span>
-                        </div>
-                        {expense.description && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {expense.description}
-                          </p>
-                        )}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveExpense(idx)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="p-3 bg-primary/5 border-primary/20 border rounded">
-                    <div className="flex justify-between font-semibold">
-                      <span>รวมค่าใช้จ่าย</span>
-                      <span className="text-primary">
-                        {expenses.reduce((sum, e) => sum + Number(e.amount), 0).toLocaleString()}{' '}
-                        บาท
-                      </span>
-                    </div>
+                <div className="p-4 bg-primary/5 border-primary/20 border rounded-lg">
+                  <div className="flex justify-between font-semibold text-base">
+                    <span>รวมค่าใช้จ่ายทั้งหมด</span>
+                    <span className="text-primary">
+                      {expenses.reduce((sum, e) => sum + Number(e.amount), 0).toLocaleString()} บาท
+                    </span>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="p-6 bg-muted/20 rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">ยังไม่มีรายการค่าใช้จ่าย</p>
+              </div>
+            )}
           </Card>
         </div>
 
@@ -463,7 +269,7 @@ export function DesktopView({
               <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
                 3
               </div>
-              <h2 className="text-xl font-semibold">เซ็นสัญญา</h2>
+              <h2 className="text-xl font-semibold">สัญญาเช่ารถ</h2>
             </div>
 
             <div className="space-y-4">
@@ -491,142 +297,130 @@ export function DesktopView({
               </div>
 
               {/* อัตราค่าปรับ */}
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <h4 className="text-xs font-semibold mb-2">อัตราค่าปรับ</h4>
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
+              <div className="p-4 bg-muted/20 rounded-lg">
+                <h3 className="text-sm font-semibold mb-3">อัตราค่าปรับ</h3>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex justify-between py-1">
                     <span className="text-muted-foreground">(A) รอยขูดข่วน</span>
-                    <span>500-1,000฿</span>
+                    <span className="font-medium">500-1,000 บาท</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between py-1">
                     <span className="text-muted-foreground">(B) รอยกระตุก-ตอก</span>
-                    <span>700-3,000฿</span>
+                    <span className="font-medium">700-3,000 บาท</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">(C) บุบเล็กน้อย</span>
-                    <span>500฿</span>
+                  <div className="flex justify-between py-1">
+                    <span className="text-muted-foreground">(C) รอยบุบเล็กน้อย</span>
+                    <span className="font-medium">500 บาท</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">(D) บุบมาก</span>
-                    <span>1,000-3,000฿</span>
+                  <div className="flex justify-between py-1">
+                    <span className="text-muted-foreground">(D) รอยบุบมาก</span>
+                    <span className="font-medium">1,000-3,000 บาท</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-muted-foreground">(E) รอยริ้ว</span>
+                    <span className="font-medium">700-3,000 บาท</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-muted-foreground">(F) อื่นๆ</span>
+                    <span className="font-medium">ตามเกณฑ์</span>
                   </div>
                 </div>
               </div>
 
               {/* สัญญา */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <FileText className="h-4 w-4 text-primary" />
-                  <Label className="text-sm font-medium">สัญญาเช่ารถยนต์</Label>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <h3 className="text-sm font-semibold">สัญญาเช่ารถยนต์</h3>
                 </div>
-                <ScrollArea className="h-[300px] w-full rounded border p-3 bg-muted/30">
+                <ScrollArea className="h-[300px] w-full rounded-lg border border-border p-4 bg-muted/20">
                   <div className="text-xs leading-relaxed space-y-3">
                     <p className="font-semibold">
-                      สัญญาเช่ารถยนต์ฉบับนี้ทำขึ้นระหว่าง บริษัท ABC เช่ารถ จำกัด และ
-                      คุณสมชาย ใจดี
+                      สัญญาเช่ารถยนต์ฉบับนี้ทำขึ้นระหว่าง บริษัท ABC เช่ารถ จำกัด ("ผู้ให้เช่า") 
+                      และ คุณสมชาย ใจดี ("ผู้เช่า") ตกลงทำสัญญาเช่ารถยนต์ดังต่อไปนี้
                     </p>
+                    
                     <div>
                       <p className="font-semibold">ข้อ 1: ข้อมูลรถยนต์</p>
-                      <p>
-                        Toyota Camry หมายเลขทะเบียน กก-1234 กรุงเทพมหานคร เลขตัวถัง:
-                        ABC123456789
-                      </p>
+                      <p>ผู้ให้เช่าตกลงให้เช่า และผู้เช่าตกลงเช่ารถยนต์ยี่ห้อ Toyota รุ่น Camry 
+                      หมายเลขทะเบียน กก-1234 กรุงเทพมหานคร</p>
                     </div>
+
                     <div>
                       <p className="font-semibold">ข้อ 2: ระยะเวลาการเช่า</p>
-                      <p>
-                        3-10 กุมภาพันธ์ 2026 เวลา 14:00 น. รวม 7 วัน
-                      </p>
+                      <p>ตั้งแต่วันที่ 3 กุมภาพันธ์ 2026 ถึงวันที่ 10 กุมภาพันธ์ 2026 รวม 7 วัน</p>
                     </div>
+
                     <div>
-                      <p className="font-semibold">ข้อ 3: ค่าเช่า</p>
-                      <p>15,000 บาท + ค่าส่งรถ 500 บาท + เงินประกัน 10,000 บาท = 25,500 บาท</p>
+                      <p className="font-semibold">ข้อ 3: ค่าเช่าและค่าใช้จ่าย</p>
+                      <p>• ค่าเช่ารถ: 15,000 บาท<br />
+                      • ค่าส่งรถ: 500 บาท<br />
+                      • เงินประกัน: 10,000 บาท<br />
+                      • ยอดรวม: 25,500 บาท</p>
                     </div>
+
                     <div>
-                      <p className="font-semibold">ข้อ 4-8:</p>
-                      <p>
-                        เงินประกันคืนเมื่อรถไม่เสียหาย / ผู้เช่ารับผิดชอบความเสียหาย /
-                        อัตราค่าปรับตามตารางข้างต้น / คืนรถล่าช้า 500 บาท/ชม. /
-                        ยกเลิกแจ้งล่วงหน้า 3 วัน
-                      </p>
+                      <p className="font-semibold">ข้อ 4: เงินประกัน</p>
+                      <p>ผู้เช่าต้องวางเงินประกัน 10,000 บาท ซึ่งจะคืนให้เมื่อคืนรถในสภาพสมบูรณ์</p>
                     </div>
+
+                    <div>
+                      <p className="font-semibold">ข้อ 5: ความรับผิดชอบของผู้เช่า</p>
+                      <p>• ผู้เช่าต้องรับผิดชอบในความเสียหายที่เกิดขึ้นกับรถ<br />
+                      • ห้ามนำรถไปใช้ในทางที่ผิดกฎหมาย<br />
+                      • ห้ามให้บุคคลอื่นขับรถโดยไม่ได้รับอนุญาต</p>
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">ข้อ 6: อัตราค่าปรับ</p>
+                      <p>• รอยขูดข่วน (A): 500-1,000 บาท<br />
+                      • รอยกระตุก-ตอก (B): 700-3,000 บาท<br />
+                      • รอยบุบเล็กน้อย (C): 500 บาท<br />
+                      • รอยบุบมาก (D): 1,000-3,000 บาท</p>
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">ข้อ 7: การคืนรถ</p>
+                      <p>ผู้เช่าต้องคืนรถในสภาพเดียวกับตอนรับรถ หากคืนล่าช้ามีค่าปรับ 500 บาท/ชั่วโมง</p>
+                    </div>
+
+                    <p className="pt-3 border-t border-border/50 text-center">
+                      ผู้เช่าและผู้ให้เช่าได้อ่านและเข้าใจข้อตกลงทั้งหมดแล้ว
+                    </p>
                   </div>
                 </ScrollArea>
+              </div>
 
-                <button
-                  onClick={() => setContractRead(!contractRead)}
-                  className={`w-full flex items-center justify-between p-3 rounded border mt-3 transition-all ${
-                    contractRead
-                      ? 'border-success bg-success/10'
-                      : 'border-border hover:bg-accent/50'
-                  }`}
-                >
-                  <span className="text-xs font-medium">อ่านและเข้าใจสัญญาแล้ว</span>
+              {/* สถานะสัญญา */}
+              <div className="space-y-2">
+                <div className={`flex items-center gap-2 p-3 rounded-lg border ${
+                  contractRead ? 'border-success bg-success/10' : 'border-border bg-muted/20'
+                }`}>
                   {contractRead ? (
                     <CheckCircle2 className="h-5 w-5 text-success" />
                   ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground" />
+                    <span className="h-5 w-5" />
                   )}
-                </button>
-              </div>
+                  <span className="text-sm font-medium">
+                    {contractRead ? '✓ อ่านและเข้าใจสัญญาแล้ว' : 'ยังไม่ได้อ่านสัญญา'}
+                  </span>
+                </div>
 
-              {/* ลายเซ็น */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-xs font-medium mb-2 block">ลายเซ็นลูกค้า</Label>
-                  <div className="border-2 border-dashed rounded p-4 bg-muted/20 min-h-24 flex items-center justify-center">
-                    {customerSignature ? (
-                      <div className="text-center space-y-1">
-                        <Check className="h-6 w-6 text-success mx-auto" />
-                        <p className="text-xs text-success">เซ็นแล้ว</p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 text-xs"
-                          onClick={() => setCustomerSignature('')}
-                        >
-                          เซ็นใหม่
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCustomerSignature('signed-' + Date.now())}
-                      >
-                        <PenTool className="mr-1 h-3 w-3" />
-                        เซ็นชื่อ
-                      </Button>
-                    )}
+                <div className={`p-3 rounded-lg border ${
+                  customerSignature ? 'border-success bg-success/10' : 'border-border bg-muted/20'
+                }`}>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">ลายเซ็นลูกค้า</div>
+                  <div className="text-sm font-semibold">
+                    {customerSignature ? '✓ ลูกค้าเซ็นชื่อแล้ว' : 'รอลายเซ็น'}
                   </div>
                 </div>
 
-                <div>
-                  <Label className="text-xs font-medium mb-2 block">ลายเซ็นพนักงาน</Label>
-                  <div className="border-2 border-dashed rounded p-4 bg-muted/20 min-h-24 flex items-center justify-center">
-                    {driverSignature ? (
-                      <div className="text-center space-y-1">
-                        <Check className="h-6 w-6 text-success mx-auto" />
-                        <p className="text-xs text-success">เซ็นแล้ว</p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 text-xs"
-                          onClick={() => setDriverSignature('')}
-                        >
-                          เซ็นใหม่
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setDriverSignature('signed-' + Date.now())}
-                      >
-                        <PenTool className="mr-1 h-3 w-3" />
-                        เซ็นชื่อ
-                      </Button>
-                    )}
+                <div className={`p-3 rounded-lg border ${
+                  driverSignature ? 'border-success bg-success/10' : 'border-border bg-muted/20'
+                }`}>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">ลายเซ็นพนักงาน</div>
+                  <div className="text-sm font-semibold">
+                    {driverSignature ? '✓ พนักงานเซ็นชื่อแล้ว' : 'รอลายเซ็น'}
                   </div>
                 </div>
               </div>
@@ -639,109 +433,80 @@ export function DesktopView({
               <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
                 4
               </div>
-              <h2 className="text-xl font-semibold">รับเงิน</h2>
+              <h2 className="text-xl font-semibold">การชำระเงิน</h2>
             </div>
 
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="payAmount" className="text-sm font-medium mb-2 block">
-                  จำนวนเงินที่รับจริง
-                </Label>
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="payAmount"
-                    type="number"
-                    placeholder="0"
-                    value={paymentAmount}
-                    onChange={(e) => setPaymentAmount(e.target.value)}
-                    className="h-10"
-                  />
-                  <span className="text-sm text-muted-foreground">บาท</span>
-                </div>
-
-                {paymentAmount && Number(paymentAmount) !== 25500 && (
-                  <div className="flex items-start gap-2 p-2 bg-warning/10 border border-warning/30 rounded mt-2">
-                    <AlertCircle className="h-4 w-4 text-warning-foreground mt-0.5" />
-                    <div className="text-xs">
-                      <p className="font-medium text-warning-foreground">
-                        ส่วนต่าง: {(Number(paymentAmount) - 25500).toLocaleString()} บาท
-                      </p>
-                      <p className="text-warning-foreground/80">
-                        {Number(paymentAmount) < 25500
-                          ? '→ บันทึกเป็นหนี้ค้างชำระ (เดบิต)'
-                          : '→ บันทึกเป็นเครดิตให้ลูกค้า'}
-                      </p>
-                    </div>
+              {/* ยอดที่ต้องชำระ */}
+              <div className="p-4 bg-primary/5 border-primary/20 border rounded-lg">
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between py-1">
+                    <span className="text-muted-foreground">ยอดที่ต้องชำระ</span>
+                    <span className="font-semibold">25,500 บาท</span>
                   </div>
-                )}
+                  <div className="flex justify-between py-1 border-t pt-2">
+                    <span className="text-muted-foreground">จำนวนเงินที่รับจริง</span>
+                    <span className="font-bold text-primary text-base">
+                      {paymentAmount ? `${Number(paymentAmount).toLocaleString()} บาท` : '-'}
+                    </span>
+                  </div>
+                  {paymentAmount && Number(paymentAmount) !== 25500 && (
+                    <div className="flex justify-between py-1 bg-warning/10 px-2 rounded">
+                      <span className="text-xs text-warning-foreground">ส่วนต่าง</span>
+                      <span className="text-xs font-semibold text-warning-foreground">
+                        {(Number(paymentAmount) - 25500).toLocaleString()} บาท
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
 
+              {/* วิธีชำระเงิน */}
               <div>
-                <Label className="text-sm font-medium mb-2 block">วิธีชำระเงิน</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: 'CASH', label: 'เงินสด' },
-                    { value: 'TRANSFER', label: 'โอนเงิน' },
-                    { value: 'CREDIT_CARD', label: 'บัตรเครดิต' },
-                  ].map((method) => (
-                    <button
-                      key={method.value}
-                      onClick={() => setPaymentMethod(method.value as any)}
-                      className={`p-2 rounded border text-sm font-medium transition-all ${
-                        paymentMethod === method.value
-                          ? 'border-primary bg-primary text-primary-foreground'
-                          : 'border-border hover:bg-accent/50'
-                      }`}
-                    >
-                      {method.label}
-                    </button>
-                  ))}
+                <div className="text-sm font-medium mb-2">วิธีชำระเงิน</div>
+                <div className={`p-3 rounded-lg border ${
+                  paymentMethod ? 'border-primary bg-primary/5' : 'border-border bg-muted/20'
+                }`}>
+                  <span className="text-sm font-semibold">
+                    {paymentMethod === 'CASH' && 'เงินสด'}
+                    {paymentMethod === 'TRANSFER' && 'โอนเงิน'}
+                    {paymentMethod === 'CREDIT_CARD' && 'บัตรเครดิต'}
+                    {!paymentMethod && 'ยังไม่ได้เลือกวิธีชำระ'}
+                  </span>
                 </div>
+              </div>
 
-                {paymentMethod === 'TRANSFER' && (
-                  <div className="mt-3 space-y-2">
-                    <Label className="text-xs font-medium">สลิปโอนเงิน</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <input
-                        ref={receiptInputRef}
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        onChange={handleReceiptUpload}
-                        className="hidden"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => receiptInputRef.current?.click()}
-                      >
-                        <Camera className="mr-1 h-4 w-4" />
-                        ถ่ายรูป
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPaymentSlip('slip-' + Date.now())}
-                      >
-                        <Upload className="mr-1 h-4 w-4" />
-                        อัพโหลด
-                      </Button>
-                    </div>
-                    {paymentSlip && (
-                      <p className="text-xs text-success flex items-center gap-1">
-                        <Check className="h-3 w-3" />
-                        อัพโหลดสลิปแล้ว
-                      </p>
+              {/* สลิปโอนเงิน */}
+              {paymentMethod === 'TRANSFER' && (
+                <div>
+                  <div className="text-sm font-medium mb-2">สลิปโอนเงิน</div>
+                  <div className={`p-3 rounded-lg border text-center ${
+                    paymentSlip ? 'border-success bg-success/10' : 'border-border bg-muted/20'
+                  }`}>
+                    {paymentSlip ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <Check className="h-4 w-4 text-success" />
+                        <span className="text-sm font-semibold text-success-foreground">
+                          อัพโหลดสลิปแล้ว
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">ยังไม่ได้อัพโหลดสลิป</span>
                     )}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
-              <Button className="w-full h-11 bg-success hover:bg-success/90 text-success-foreground">
-                <Check className="mr-2 h-5 w-5" />
-                บันทึกงานส่งรถเสร็จสิ้น
-              </Button>
+              {/* หมายเหตุหนี้ค้าง */}
+              {paymentAmount && Number(paymentAmount) !== 25500 && (
+                <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
+                  <div className="text-xs font-medium text-warning-foreground">
+                    {Number(paymentAmount) < 25500 
+                      ? '→ จะบันทึกเป็นหนี้ค้างชำระ (เดบิต)'
+                      : '→ จะบันทึกเป็นเครดิตให้ลูกค้า'}
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
         </div>
