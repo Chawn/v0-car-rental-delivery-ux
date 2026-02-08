@@ -82,7 +82,12 @@ export function DesktopView({
               <h1 className="text-xl font-bold">รายละเอียดงานส่งรถ #DT20260203001</h1>
               <p className="text-sm text-muted-foreground">Toyota Camry - กก 1234</p>
             </div>
-            <Badge className="bg-success text-success-foreground">ดูรายละเอียด</Badge>
+            {onAction && (
+              <Button onClick={onAction} size="lg" className="h-11 px-6">
+                <FileText className="mr-2 h-5 w-5" />
+                ดำเนินการ
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -578,20 +583,6 @@ export function DesktopView({
           </div>
         </div>
       </div>
-
-      {/* Floating Action Button */}
-      {onAction && (
-        <div className="fixed bottom-8 right-8 z-50">
-          <Button
-            size="lg"
-            onClick={onAction}
-            className="h-14 px-8 text-base font-semibold shadow-2xl hover:shadow-xl transition-all"
-          >
-            <FileText className="mr-2 h-5 w-5" />
-            ดำเนินการ
-          </Button>
-        </div>
-      )}
     </div>
   )
 }
