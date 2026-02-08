@@ -32,6 +32,7 @@ export function DesktopView({
   paymentSlip,
   expenses,
   onBack,
+  onAction,
 }: DeliveryViewProps) {
   const vehicleConditionLabels: Record<string, string> = {
     windshieldWiper: 'แผงปัดน้ำ',
@@ -46,6 +47,20 @@ export function DesktopView({
     turnSignals: 'ไฟเลี้ยว',
     engineOil: 'น้ำมันเครื่อง',
     brakeFluid: 'น้ำมันเบรก',
+  }
+
+  // Calculate step completion status
+  const step1Complete = startMileage && startFuelLevel && vehiclePhotos.length > 0
+  const step2Complete = true // เดินทาง - always considered done when viewing
+  const step3Complete = contractRead && customerSignature && driverSignature
+  const step4Complete = paymentAmount && paymentMethod
+  const step5Complete = expenses.length > 0
+
+  const getStepStatus = (stepComplete: boolean) => {
+    if (stepComplete) {
+      return { variant: 'default' as const, label: 'เสร็จสิ้น', bgClass: 'bg-success text-success-foreground' }
+    }
+    return { variant: 'secondary' as const, label: 'ยังไม่เสร็จ', bgClass: 'bg-muted text-muted-foreground' }
   }
 
   return (
@@ -94,11 +109,16 @@ export function DesktopView({
           <div className="space-y-8">
             {/* Step 1: ตรวจสภาพรถ */}
             <Card className="p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
-                  1
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center font-semibold ${step1Complete ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}>
+                    {step1Complete ? <Check className="h-5 w-5" /> : '1'}
+                  </div>
+                  <h2 className="text-xl font-semibold">ตรวจสภาพรถ</h2>
                 </div>
-                <h2 className="text-xl font-semibold">ตรวจสภาพรถ</h2>
+                <Badge className={getStepStatus(step1Complete).bgClass}>
+                  {getStepStatus(step1Complete).label}
+                </Badge>
               </div>
 
               <div className="space-y-6">
@@ -194,11 +214,16 @@ export function DesktopView({
 
             {/* Step 2: เดินทาง */}
             <Card className="p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
-                  2
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center font-semibold ${step2Complete ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}>
+                    {step2Complete ? <Check className="h-5 w-5" /> : '2'}
+                  </div>
+                  <h2 className="text-xl font-semibold">ข้อมูลการเดินทาง</h2>
                 </div>
-                <h2 className="text-xl font-semibold">ข้อมูลการเดินทาง</h2>
+                <Badge className={getStepStatus(step2Complete).bgClass}>
+                  {getStepStatus(step2Complete).label}
+                </Badge>
               </div>
 
               <div className="space-y-4">
@@ -243,11 +268,16 @@ export function DesktopView({
 
             {/* Step 5: ค่าใช้จ่าย */}
             <Card className="p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
-                  5
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center font-semibold ${step5Complete ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}>
+                    {step5Complete ? <Check className="h-5 w-5" /> : '5'}
+                  </div>
+                  <h2 className="text-xl font-semibold">ค่าใช้จ่ายในการเดินทาง</h2>
                 </div>
-                <h2 className="text-xl font-semibold">ค่าใช้จ่ายในการเดินทาง</h2>
+                <Badge className={getStepStatus(step5Complete).bgClass}>
+                  {getStepStatus(step5Complete).label}
+                </Badge>
               </div>
 
               {expenses.length > 0 ? (
@@ -291,11 +321,16 @@ export function DesktopView({
           <div className="space-y-8">
             {/* Step 3: เซ็นสัญญา */}
             <Card className="p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
-                  3
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center font-semibold ${step3Complete ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}>
+                    {step3Complete ? <Check className="h-5 w-5" /> : '3'}
+                  </div>
+                  <h2 className="text-xl font-semibold">สัญญาเช่ารถ</h2>
                 </div>
-                <h2 className="text-xl font-semibold">สัญญาเช่ารถ</h2>
+                <Badge className={getStepStatus(step3Complete).bgClass}>
+                  {getStepStatus(step3Complete).label}
+                </Badge>
               </div>
 
               <div className="space-y-4">
@@ -455,11 +490,16 @@ export function DesktopView({
 
             {/* Step 4: รับเงิน */}
             <Card className="p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
-                  4
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center font-semibold ${step4Complete ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}>
+                    {step4Complete ? <Check className="h-5 w-5" /> : '4'}
+                  </div>
+                  <h2 className="text-xl font-semibold">การชำระเงิน</h2>
                 </div>
-                <h2 className="text-xl font-semibold">การชำระเงิน</h2>
+                <Badge className={getStepStatus(step4Complete).bgClass}>
+                  {getStepStatus(step4Complete).label}
+                </Badge>
               </div>
 
               <div className="space-y-4">
@@ -538,6 +578,20 @@ export function DesktopView({
           </div>
         </div>
       </div>
+
+      {/* Floating Action Button */}
+      {onAction && (
+        <div className="fixed bottom-8 right-8 z-50">
+          <Button
+            size="lg"
+            onClick={onAction}
+            className="h-14 px-8 text-base font-semibold shadow-2xl hover:shadow-xl transition-all"
+          >
+            <FileText className="mr-2 h-5 w-5" />
+            ดำเนินการ
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

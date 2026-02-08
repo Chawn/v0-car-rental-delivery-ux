@@ -79,4 +79,5 @@ export interface DeliveryViewProps {
   handleAddExpense: () => void
   handleRemoveExpense: (idx: number) => void
   onBack?: () => void
+  onAction?: () => void
 }

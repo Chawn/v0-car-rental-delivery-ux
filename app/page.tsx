@@ -116,6 +116,11 @@ export default function DeliveryTaskPage() {
     setSelectedTaskId('')
   }
 
+  const handleGoToAction = () => {
+    setCurrentStep(1)
+    setViewMode('action')
+  }
+
   const commonProps = {
     currentStep,
     setCurrentStep,
@@ -177,7 +182,7 @@ export default function DeliveryTaskPage() {
             )}
 
             {/* Detail View (Desktop - Read Only) */}
-            {viewMode === 'detail' && <DesktopView {...commonProps} />}
+            {viewMode === 'detail' && <DesktopView {...commonProps} onAction={handleGoToAction} />}
 
             {/* Action View (Mobile - Interactive) */}
             {viewMode === 'action' && <MobileView {...commonProps} />}
