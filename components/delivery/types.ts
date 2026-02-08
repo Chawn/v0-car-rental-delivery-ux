@@ -78,4 +78,5 @@ export interface DeliveryViewProps {
   handleReceiptUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleAddExpense: () => void
   handleRemoveExpense: (idx: number) => void
+  onBack?: () => void
 }

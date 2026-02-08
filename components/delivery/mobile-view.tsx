@@ -28,6 +28,7 @@ import {
   X,
   AlertCircle,
   Navigation,
+  ArrowLeft,
 } from 'lucide-react'
 import type {
   Step,
@@ -77,6 +78,7 @@ export function MobileView({
   handleReceiptUpload,
   handleAddExpense,
   handleRemoveExpense,
+  onBack,
 }: DeliveryViewProps) {
   const steps = [
     { number: 1, title: 'ตรวจสภาพ', icon: Car },
@@ -457,7 +459,7 @@ export function MobileView({
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between py-2 border-b border-border/50">
                   <span className="text-sm text-muted-foreground">เวลานัดหมาย</span>
-                  <span className="font-medium text-sm">14:00 น.</span>
+                  <span className="font-medium">14:00 น.</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-border/50">
                   <span className="text-sm text-muted-foreground">ชื่อลูกค้า</span>
@@ -991,14 +993,20 @@ export function MobileView({
       {/* Header */}
       <div className="sticky top-0 z-50 bg-card shadow-md">
         <div className="container max-w-2xl mx-auto px-4 py-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-xl font-semibold text-foreground">
-                งานส่งรถ #DT20260203001
-              </h1>
+          <div className="flex items-center gap-3 mb-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="flex-shrink-0"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-semibold text-foreground">งานส่งรถ #DT20260203001</h1>
               <p className="text-sm text-muted-foreground mt-1">Toyota Camry - กก 1234</p>
             </div>
-            <Badge variant="secondary" className="text-sm px-3 py-1.5 font-medium">
+            <Badge variant="secondary" className="text-sm px-3 py-1.5 font-medium flex-shrink-0">
               {currentStep}/5
             </Badge>
           </div>

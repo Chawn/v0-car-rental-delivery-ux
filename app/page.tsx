@@ -3,8 +3,7 @@
 import React, { useState, useRef } from 'react'
 import { MobileView } from '@/components/delivery/mobile-view'
 import { DesktopView } from '@/components/delivery/desktop-view'
-import { Button } from '@/components/ui/button'
-import { Monitor, Smartphone } from 'lucide-react'
+import { TaskQueue } from '@/components/delivery/task-queue'
 import type {
   Step,
   VehicleCondition,
@@ -12,8 +11,11 @@ import type {
   Expense,
 } from '@/components/delivery/types'
 
+type ViewMode = 'queue' | 'detail' | 'action'
+
 export default function DeliveryTaskPage() {
-  const [viewMode, setViewMode] = useState<'mobile' | 'desktop'>('mobile')
+  const [viewMode, setViewMode] = useState<ViewMode>('queue')
+  const [selectedTaskId, setSelectedTaskId] = useState<string>('')
   const [currentStep, setCurrentStep] = useState<Step>(1)
   const [startMileage, setStartMileage] = useState('')
   const [startFuelLevel, setStartFuelLevel] = useState('')
@@ -86,6 +88,22 @@ export default function DeliveryTaskPage() {
     setExpenses(expenses.filter((_, i) => i !== idx))
   }
 
+  const handleViewDetail = (taskId: string) => {
+    setSelectedTaskId(taskId)
+    setViewMode('detail')
+  }
+
+  const handleStartDelivery = (taskId: string) => {
+    setSelectedTaskId(taskId)
+    setCurrentStep(1)
+    setViewMode('action')
+  }
+
+  const handleBackToQueue = () => {
+    setViewMode('queue')
+    setSelectedTaskId('')
+  }
+
   const commonProps = {
     currentStep,
     setCurrentStep,
@@ -125,28 +143,21 @@ export default function DeliveryTaskPage() {
     handleReceiptUpload,
     handleAddExpense,
     handleRemoveExpense,
+    onBack: handleBackToQueue,
   }
 
   return (
-    <div className="relative">
-      {/* View Mode Toggle Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setViewMode(viewMode === 'mobile' ? 'desktop' : 'mobile')}
-          size="lg"
-          className="h-14 w-14 rounded-full shadow-2xl"
-          title={`Switch to ${viewMode === 'mobile' ? 'Desktop' : 'Mobile'} View`}
-        >
-          {viewMode === 'mobile' ? (
-            <Monitor className="h-6 w-6" />
-          ) : (
-            <Smartphone className="h-6 w-6" />
-          )}
-        </Button>
-      </div>
+    <div className="relative min-h-screen">
+      {/* Task Queue View */}
+      {viewMode === 'queue' && (
+        <TaskQueue onViewDetail={handleViewDetail} onStartDelivery={handleStartDelivery} />
+      )}
 
-      {/* Render Views */}
-      {viewMode === 'mobile' ? <MobileView {...commonProps} /> : <DesktopView {...commonProps} />}
+      {/* Detail View (Desktop - Read Only) */}
+      {viewMode === 'detail' && <DesktopView {...commonProps} />}
+
+      {/* Action View (Mobile - Interactive) */}
+      {viewMode === 'action' && <MobileView {...commonProps} />}
     </div>
   )
 }
