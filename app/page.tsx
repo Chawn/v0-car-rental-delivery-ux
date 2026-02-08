@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
+import { Sidebar } from '@/components/layout/sidebar'
+import { HomePage } from '@/components/pages/home-page'
 import { MobileView } from '@/components/delivery/mobile-view'
 import { DesktopView } from '@/components/delivery/desktop-view'
 import { TaskQueue } from '@/components/delivery/task-queue'
@@ -11,10 +13,12 @@ import type {
   Expense,
 } from '@/components/delivery/types'
 
-type ViewMode = 'queue' | 'detail' | 'action'
+type PageMode = 'home' | 'queue'
+type ViewMode = 'list' | 'detail' | 'action'
 
 export default function DeliveryTaskPage() {
-  const [viewMode, setViewMode] = useState<ViewMode>('queue')
+  const [pageMode, setPageMode] = useState<PageMode>('home')
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [selectedTaskId, setSelectedTaskId] = useState<string>('')
   const [currentStep, setCurrentStep] = useState<Step>(1)
   const [startMileage, setStartMileage] = useState('')
@@ -88,6 +92,14 @@ export default function DeliveryTaskPage() {
     setExpenses(expenses.filter((_, i) => i !== idx))
   }
 
+  const handleNavigate = (page: PageMode) => {
+    setPageMode(page)
+    if (page === 'queue') {
+      setViewMode('list')
+    }
+    setSelectedTaskId('')
+  }
+
   const handleViewDetail = (taskId: string) => {
     setSelectedTaskId(taskId)
     setViewMode('detail')
@@ -100,7 +112,7 @@ export default function DeliveryTaskPage() {
   }
 
   const handleBackToQueue = () => {
-    setViewMode('queue')
+    setViewMode('list')
     setSelectedTaskId('')
   }
 
@@ -147,17 +159,31 @@ export default function DeliveryTaskPage() {
   }
 
   return (
-    <div className="relative min-h-screen">
-      {/* Task Queue View */}
-      {viewMode === 'queue' && (
-        <TaskQueue onViewDetail={handleViewDetail} onStartDelivery={handleStartDelivery} />
-      )}
+    <div className="flex min-h-screen bg-background">
+      {/* Sidebar */}
+      <Sidebar currentPage={pageMode} onNavigate={handleNavigate} />
 
-      {/* Detail View (Desktop - Read Only) */}
-      {viewMode === 'detail' && <DesktopView {...commonProps} />}
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto">
+        {/* Home Page */}
+        {pageMode === 'home' && <HomePage />}
 
-      {/* Action View (Mobile - Interactive) */}
-      {viewMode === 'action' && <MobileView {...commonProps} />}
+        {/* Queue Page with different views */}
+        {pageMode === 'queue' && (
+          <>
+            {/* Task Queue List View */}
+            {viewMode === 'list' && (
+              <TaskQueue onViewDetail={handleViewDetail} onStartDelivery={handleStartDelivery} />
+            )}
+
+            {/* Detail View (Desktop - Read Only) */}
+            {viewMode === 'detail' && <DesktopView {...commonProps} />}
+
+            {/* Action View (Mobile - Interactive) */}
+            {viewMode === 'action' && <MobileView {...commonProps} />}
+          </>
+        )}
+      </main>
     </div>
   )
 }
